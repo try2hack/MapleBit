@@ -31,11 +31,13 @@ if (isset($_POST['submit'])) {
     	'username' => 'required|alpha_numeric|exists,name|max_len,12|min_len,4',
     	'password' => 'required|min_len,6',
     	'email' => 'required|valid_email|exists,email',
+		'gender' => 'required',
     	'g-recaptcha-response' => 'required|recaptcha',
 	));
 	$gump->filter_rules(array(
 	    'username' => 'trim|sanitize_string',
 	    'password' => 'trim',
+		'gender' => 'trim',
 	    'email'    => 'trim|sanitize_email',
 	));
 	GUMP::set_field_name("g-recaptcha-response", "reCAPTCHA");
@@ -49,7 +51,7 @@ if (isset($_POST['submit'])) {
 		echo '</div>';
 	} else {
 		$hashed_password = hashPassword($validated_data['password'], $hash_algorithm, null);
-		$insert_user_query = "INSERT INTO accounts (`name`, `password`, `ip`, `email`, `birthday`) VALUES ('".$validated_data['username']."', '".$hashed_password."', '".getRealIpAddr()."', '".$validated_data['email']."', '1990-01-01')";
+		$insert_user_query = "INSERT INTO accounts (`name`, `password`, `ip`, `email`, `birthday`,`gender`) VALUES ('".$validated_data['username']."', '".$hashed_password."', '".getRealIpAddr()."', '".$validated_data['email']."', '1990-01-01','".$validated_data['gender']."')";
 		$mysqli->query($insert_user_query);
 		if (!empty($mysqli->error)) {
 			echo '<div class="alert alert-danger"><b>Error!</b> There was a problem registering your account.</div>';
@@ -73,6 +75,14 @@ if (isset($_POST['submit'])) {
 		<label for="inputEmail">Email</label>
 		<input type="email" name="email" class="form-control" id="inputEmail" autocomplete="off" placeholder="Email" value="<?php echo isset($_POST['email']) ? $_POST['email'] : '' ?>" required>
 	</div>
+	
+	<label class="my-1 mr-2" for="inlineFormCustomSelectPref">Gender</label>
+  <select class="custom-select my-1 mr-sm-2" id="gender" name="gender">
+    <option selected>Choose...</option>
+    <option value="0">Boy</option>
+    <option value="1">Girl</option>    
+  </select>
+	
 	<b>reCAPTCHA</b>
 	<div class="g-recaptcha" data-sitekey="<?php echo $recaptcha_public; ?>"></div>
 	<br/>
